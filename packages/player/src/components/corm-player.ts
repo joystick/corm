@@ -13,6 +13,7 @@ import {
   type ManifestOrganization,
   SequencingEngine,
 } from "../sequencing/mod.ts";
+import { cormTheme } from "../styles/theme.ts";
 import type { ChoiceMenuItem } from "./corm-controls.ts";
 import "./corm-nav.ts";
 import "./corm-content.ts";
@@ -26,24 +27,27 @@ interface CormManifest {
 
 @customElement("corm-player")
 export class CormPlayer extends LitElement {
-  static override styles = css`
-    :host {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      min-height: 400px;
-      background: var(--corm-bg, #ffffff);
-      color: var(--corm-text, hsl(0 0% 3.9%));
-      font-family: system-ui, -apple-system, sans-serif;
-      border: 1px solid hsl(0 0% 89.8%);
-      border-radius: var(--corm-radius, 0.5rem);
-      overflow: hidden;
-    }
+  static override styles = [
+    cormTheme,
+    css`
+      :host {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        min-height: 400px;
+        background: var(--corm-background);
+        color: var(--corm-foreground);
+        font-family: var(--corm-font-family);
+        border: 1px solid var(--corm-border);
+        border-radius: var(--corm-radius);
+        overflow: hidden;
+      }
 
-    corm-content {
-      flex: 1;
-    }
-  `;
+      corm-content {
+        flex: 1;
+      }
+    `,
+  ];
 
   @property({ attribute: "course-id" })
   declare courseId: string;

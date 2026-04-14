@@ -1,3 +1,7 @@
+// Theme system (Phase 6.2)
+export { cormButton, cormCard, cormTheme } from "./styles/mod.ts";
+export { detectHostTheme } from "./styles/mod.ts";
+
 export { CormPlayer } from "./components/corm-player.ts";
 export { CormNav } from "./components/corm-nav.ts";
 export { CormContent } from "./components/corm-content.ts";

@@ -1,5 +1,6 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
+import { cormButton, cormTheme } from "../styles/theme.ts";
 
 export interface ChoiceMenuItem {
   id: string;
@@ -9,93 +10,97 @@ export interface ChoiceMenuItem {
 
 @customElement("corm-controls")
 export class CormControls extends LitElement {
-  static override styles = css`
-    :host {
-      display: block;
-      background: var(--corm-bg, #ffffff);
-      border-top: 1px solid hsl(0 0% 89.8%);
-      padding: 0.75rem 1rem;
-    }
+  static override styles = [
+    cormTheme,
+    cormButton,
+    css`
+      :host {
+        display: block;
+        background: var(--corm-card);
+        border-top: 1px solid var(--corm-border);
+        padding: var(--corm-space-3) var(--corm-space-4);
+      }
 
-    .controls {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      max-width: 65ch;
-      margin: 0 auto;
-      position: relative;
-    }
+      .controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 65ch;
+        margin: 0 auto;
+        position: relative;
+      }
 
-    button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      padding: 0.5rem 1rem;
-      border: 1px solid hsl(0 0% 89.8%);
-      border-radius: var(--corm-radius, 0.5rem);
-      background: var(--corm-bg, #ffffff);
-      color: var(--corm-text, hsl(0 0% 3.9%));
-      font-size: 0.875rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.15s ease, border-color 0.15s ease;
-    }
+      button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--corm-space-2);
+        padding: var(--corm-space-2) var(--corm-space-4);
+        border: 1px solid var(--corm-border);
+        border-radius: var(--corm-radius);
+        background: transparent;
+        color: var(--corm-foreground);
+        font-size: var(--corm-font-size-sm);
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.15s ease, border-color 0.15s ease;
+      }
 
-    button:hover:not(:disabled) {
-      background: hsl(0 0% 95.1%);
-      border-color: hsl(0 0% 79.8%);
-    }
+      button:hover:not(:disabled) {
+        background: var(--corm-muted);
+      }
 
-    button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
 
-    .menu-container {
-      position: relative;
-    }
+      .menu-container {
+        position: relative;
+      }
 
-    .choice-menu {
-      position: absolute;
-      bottom: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      min-width: 200px;
-      max-height: 300px;
-      overflow-y: auto;
-      background: var(--corm-bg, #ffffff);
-      border: 1px solid hsl(0 0% 89.8%);
-      border-radius: var(--corm-radius, 0.5rem);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      margin-bottom: 0.5rem;
-      padding: 0.25rem;
-      z-index: 10;
-    }
+      .choice-menu {
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        min-width: 200px;
+        max-height: 300px;
+        overflow-y: auto;
+        background: var(--corm-card);
+        border: 1px solid var(--corm-border);
+        border-radius: var(--corm-radius);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+        margin-bottom: var(--corm-space-2);
+        padding: var(--corm-space-1);
+        z-index: 10;
+      }
 
-    .choice-item {
-      display: block;
-      width: 100%;
-      padding: 0.5rem 0.75rem;
-      border: none;
-      background: transparent;
-      color: var(--corm-text, hsl(0 0% 3.9%));
-      font-size: 0.8125rem;
-      text-align: left;
-      cursor: pointer;
-      border-radius: calc(var(--corm-radius, 0.5rem) - 2px);
-    }
+      .choice-item {
+        display: block;
+        width: 100%;
+        padding: var(--corm-space-2) var(--corm-space-3);
+        border: none;
+        background: transparent;
+        color: var(--corm-foreground);
+        font-size: var(--corm-font-size-sm);
+        text-align: left;
+        cursor: pointer;
+        border-radius: calc(var(--corm-radius) - 2px);
+      }
 
-    .choice-item:hover:not(:disabled) {
-      background: hsl(0 0% 95.1%);
-    }
+      .choice-item:hover:not(:disabled) {
+        background: var(--corm-primary);
+        color: var(--corm-primary-foreground);
+      }
 
-    .choice-item:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      color: hsl(0 0% 55%);
-    }
-  `;
+      .choice-item:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        color: var(--corm-muted-foreground);
+      }
+    `,
+  ];
 
   @property({ type: Boolean, attribute: "disable-prev" })
   declare disablePrev: boolean;

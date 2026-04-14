@@ -1,46 +1,51 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
+import { cormTheme } from "../styles/theme.ts";
 
 @customElement("corm-nav")
 export class CormNav extends LitElement {
-  static override styles = css`
-    :host {
-      display: block;
-      background: var(--corm-bg, #ffffff);
-      border-bottom: 1px solid hsl(0 0% 89.8%);
-      padding: 0.75rem 1rem;
-    }
+  static override styles = [
+    cormTheme,
+    css`
+      :host {
+        display: block;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding: var(--corm-space-3) var(--corm-space-4);
+      }
 
-    .nav-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-    }
+      .nav-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--corm-space-4);
+      }
 
-    h1 {
-      margin: 0;
-      font-size: 1.125rem;
-      font-weight: 600;
-      color: var(--corm-text, hsl(0 0% 3.9%));
-    }
+      h1 {
+        margin: 0;
+        font-size: var(--corm-font-size-lg);
+        font-weight: 600;
+        color: var(--corm-foreground);
+      }
 
-    .progress-bar {
-      flex: 1;
-      max-width: 200px;
-      height: 6px;
-      background: hsl(0 0% 89.8%);
-      border-radius: var(--corm-radius, 0.5rem);
-      overflow: hidden;
-    }
+      .progress-bar {
+        flex: 1;
+        max-width: 200px;
+        height: 6px;
+        background: var(--corm-muted);
+        border-radius: var(--corm-radius);
+        overflow: hidden;
+      }
 
-    .progress-fill {
-      height: 100%;
-      background: var(--corm-primary, hsl(0 0% 9%));
-      border-radius: var(--corm-radius, 0.5rem);
-      transition: width 0.3s ease;
-    }
-  `;
+      .progress-fill {
+        height: 100%;
+        background: var(--corm-primary);
+        border-radius: var(--corm-radius);
+        transition: width 0.3s ease;
+      }
+    `,
+  ];
 
   @property()
   declare title: string;

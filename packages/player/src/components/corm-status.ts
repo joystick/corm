@@ -1,36 +1,39 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
+import { cormTheme } from "../styles/theme.ts";
 
 @customElement("corm-status")
 export class CormStatus extends LitElement {
-  static override styles = css`
-    :host {
-      display: block;
-      padding: 0.25rem 1rem;
-      background: var(--corm-bg, #ffffff);
-      border-top: 1px solid hsl(0 0% 89.8%);
-    }
+  static override styles = [
+    cormTheme,
+    css`
+      :host {
+        display: block;
+        padding: var(--corm-space-1) var(--corm-space-4);
+        background: var(--corm-card);
+        border-top: 1px solid var(--corm-border);
+      }
 
-    .status {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.75rem;
-      color: var(--corm-text, hsl(0 0% 3.9%));
-      opacity: 0.6;
-    }
+      .status {
+        display: flex;
+        align-items: center;
+        gap: var(--corm-space-2);
+        font-size: 0.75rem;
+        color: var(--corm-muted-foreground);
+      }
 
-    .dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: hsl(142 71% 45%);
-    }
+      .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--corm-secondary);
+      }
 
-    :host([status="offline"]) .dot {
-      background: hsl(0 84% 60%);
-    }
-  `;
+      :host([status="offline"]) .dot {
+        background: var(--corm-destructive);
+      }
+    `,
+  ];
 
   @property({ reflect: true })
   declare status: "online" | "offline";
