@@ -1,0 +1,27 @@
+{
+  "workspace": [
+    "./packages/schema",
+    "./packages/scorm-parser",
+    "./packages/vendor-parsers",
+    "./packages/content-store",
+    "./packages/asset-processor",
+    "./packages/lens",
+    "./packages/validator",
+    "./packages/cli"
+  ],
+  "tasks": {
+    "test": "deno test --allow-read --allow-write --allow-net packages/",
+    "lint": "deno run -A npm:@biomejs/biome check .",
+    "fmt": "deno run -A npm:@biomejs/biome format --write .",
+    "check": "deno check packages/*/src/mod.ts"
+  },
+  "imports": {
+    "effect": "npm:effect@^3.14",
+    "@effect/schema": "npm:@effect/schema@^0.79",
+    "@effect/platform": "npm:@effect/platform@^0.78",
+    "js-yaml": "npm:js-yaml@^4.1",
+    "jszip": "npm:jszip@^3.10",
+    "sharp": "npm:sharp@^0.33",
+    "@std/assert": "jsr:@std/assert@^1.0.0"
+  }
+}

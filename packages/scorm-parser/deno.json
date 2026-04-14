@@ -1,0 +1,14 @@
+{
+  "name": "@corm/scorm-parser",
+  "version": "0.1.0",
+  "exports": "./src/mod.ts",
+  "imports": {
+    "deno-dom": "jsr:@b-fuze/deno-dom@^0.1.49",
+    "@std/assert": "jsr:@std/assert@^1.0.0"
+  },
+  "lint": {
+    "rules": {
+      "exclude": ["no-slow-types"]
+    }
+  }
+}

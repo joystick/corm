@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest identifier="com.example.fire-safety-2004" version="1.0"
+  xmlns="http://www.imsglobal.org/xsd/imscp_v1p1"
+  xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_v1p3"
+  xmlns:adlseq="http://www.adlnet.org/xsd/adlseq_v1p3"
+  xmlns:adlnav="http://www.adlnet.org/xsd/adlnav_v1p3"
+  xmlns:imsss="http://www.imsglobal.org/xsd/imsss">
+  <metadata>
+    <schema>ADL SCORM</schema>
+    <schemaversion>2004 4th Edition</schemaversion>
+  </metadata>
+  <organizations default="org-default">
+    <organization identifier="org-default">
+      <title>Fire Safety Training</title>
+      <item identifier="item-01" identifierref="res-01">
+        <title>Introduction</title>
+        <imsss:sequencing>
+          <imsss:controlMode choice="true" flow="true"/>
+          <imsss:objectives>
+            <imsss:primaryObjective objectiveID="obj-intro" satisfiedByMeasure="true">
+              <imsss:minNormalizedMeasure>0.8</imsss:minNormalizedMeasure>
+            </imsss:primaryObjective>
+          </imsss:objectives>
+        </imsss:sequencing>
+      </item>
+      <item identifier="item-02" identifierref="res-02">
+        <title>Fire Types</title>
+        <imsss:sequencing>
+          <imsss:controlMode choice="true" flow="true" forwardOnly="true"/>
+          <imsss:sequencingRules>
+            <imsss:preConditionRule>
+              <imsss:ruleConditions conditionCombination="all">
+                <imsss:ruleCondition referencedObjective="obj-intro" condition="satisfied"/>
+              </imsss:ruleConditions>
+              <imsss:ruleAction action="disabled"/>
+            </imsss:preConditionRule>
+          </imsss:sequencingRules>
+          <imsss:rollupRules>
+            <imsss:rollupRule childActivitySet="all">
+              <imsss:rollupConditions>
+                <imsss:rollupCondition condition="satisfied"/>
+              </imsss:rollupConditions>
+              <imsss:rollupAction action="satisfied"/>
+            </imsss:rollupRule>
+          </imsss:rollupRules>
+        </imsss:sequencing>
+      </item>
+    </organization>
+  </organizations>
+  <resources>
+    <resource identifier="res-01" type="webcontent" adlcp:scormType="sco" href="content/intro.html">
+      <file href="content/intro.html"/>
+    </resource>
+    <resource identifier="res-02" type="webcontent" adlcp:scormType="sco" href="content/fire-types.html">
+      <file href="content/fire-types.html"/>
+    </resource>
+  </resources>
+</manifest>
