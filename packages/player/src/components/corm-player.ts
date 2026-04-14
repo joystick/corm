@@ -1,6 +1,9 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { renderMarkdown } from "../renderer.ts";
+import { CmiRuntime } from "../cmi/runtime.ts";
+import { type Bridge, createBridge } from "../bridge.ts";
+import { type CormStore, createCormStore } from "../store/store.ts";
 import "./corm-nav.ts";
 import "./corm-content.ts";
 import "./corm-controls.ts";
@@ -50,6 +53,9 @@ export class CormPlayer extends LitElement {
   @property({ attribute: "learner-id" })
   declare learnerId: string;
 
+  @property({ attribute: "learner-name" })
+  declare learnerName: string;
+
   @property({ attribute: "manifest-url" })
   declare manifestUrl: string;
 
@@ -62,10 +68,15 @@ export class CormPlayer extends LitElement {
   @state()
   private _items: ManifestItem[] = [];
 
+  private _store: CormStore | null = null;
+  private _runtime: CmiRuntime | null = null;
+  private _bridge: Bridge | null = null;
+
   constructor() {
     super();
     this.courseId = "";
     this.learnerId = "";
+    this.learnerName = "";
     this.manifestUrl = "";
   }
 
@@ -73,6 +84,46 @@ export class CormPlayer extends LitElement {
     super.connectedCallback();
     if (this.manifestUrl) {
       this._loadManifest();
+    }
+    if (this.learnerId && this.courseId) {
+      this._initializeBridge();
+    }
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._bridge?.dispose();
+  }
+
+  private async _initializeBridge(): Promise<void> {
+    try {
+      this._store = await createCormStore();
+      this._runtime = new CmiRuntime();
+      this._runtime.initialize(
+        this.learnerId,
+        this.learnerName || this.learnerId,
+      );
+
+      this._bridge = await createBridge({
+        store: this._store,
+        runtime: this._runtime,
+        learnerId: this.learnerId,
+        courseId: this.courseId,
+      });
+      await this._bridge.initialize();
+
+      // Resume lesson_location if previously saved
+      const savedLocation = this._runtime.getValue(
+        "cmi.core.lesson_location",
+      );
+      if (savedLocation) {
+        const idx = Number(savedLocation);
+        if (!Number.isNaN(idx) && idx >= 0) {
+          this._currentIndex = idx;
+        }
+      }
+    } catch (err) {
+      console.error("[corm-player] Failed to initialize bridge:", err);
     }
   }
 
@@ -110,12 +161,28 @@ export class CormPlayer extends LitElement {
   private _onPrev(): void {
     if (this._currentIndex > 0) {
       this._currentIndex--;
+      this._trackLocation();
     }
   }
 
   private _onNext(): void {
     if (this._currentIndex < this._items.length - 1) {
       this._currentIndex++;
+      this._trackLocation();
+    }
+  }
+
+  private _trackLocation(): void {
+    if (this._runtime) {
+      try {
+        this._runtime.setValue(
+          "cmi.core.lesson_location",
+          String(this._currentIndex),
+        );
+        this._runtime.commit();
+      } catch {
+        // Runtime may be finished — ignore
+      }
     }
   }
 
