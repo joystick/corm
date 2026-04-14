@@ -6,3 +6,23 @@ export { CormStatus } from "./components/corm-status.ts";
 export { renderMarkdown } from "./renderer.ts";
 export { createBridge } from "./bridge.ts";
 export type { Bridge, BridgeOptions } from "./bridge.ts";
+
+// Sequencing engine
+export type {
+  Activity,
+  ActivitySequencing,
+  ControlModeInput,
+  ManifestItem,
+  ManifestOrganization,
+  NavigationRequest,
+  NavigationResult,
+} from "./sequencing/mod.ts";
+export {
+  allLeaves,
+  buildActivityTree,
+  evaluateConditionSet,
+  findActivity,
+  firstLeaf,
+  rollup,
+  SequencingEngine,
+} from "./sequencing/mod.ts";
