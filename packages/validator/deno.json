@@ -1,5 +1,14 @@
 {
   "name": "@corm/validator",
   "version": "0.1.0",
-  "exports": "./src/mod.ts"
+  "exports": "./src/mod.ts",
+  "imports": {
+    "@corm/schema": "jsr:@corm/schema@^0.1.0",
+    "@std/assert": "jsr:@std/assert@^1.0.0"
+  },
+  "lint": {
+    "rules": {
+      "exclude": ["no-slow-types"]
+    }
+  }
 }
