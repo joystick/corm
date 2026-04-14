@@ -55,8 +55,26 @@ export type ConditionSet = typeof ConditionSet.Type;
 // SequencingRule
 // ---------------------------------------------------------------------------
 
+/** All valid SCORM sequencing rule actions across precondition, postcondition, and exit condition rule types. */
+export const SequencingRuleAction = Schema.Literal(
+  // Precondition actions
+  "skip",
+  "disabled",
+  "hiddenFromChoice",
+  "stopForwardTraversal",
+  // Postcondition actions
+  "exitParent",
+  "exitAll",
+  "retry",
+  "retryAll",
+  "continue",
+  "previous",
+  // Exit condition actions
+  "exit",
+);
+
 export const SequencingRule = Schema.Struct({
-  action: Schema.String,
+  action: SequencingRuleAction,
   conditions: ConditionSet,
 });
 

@@ -69,6 +69,14 @@ export type LikertScale = typeof LikertScale.Type;
 // Interaction — flexible struct covering all type-specific fields
 // ---------------------------------------------------------------------------
 
+/**
+ * Interaction carries all type-specific fields as optional properties.
+ * This is a deliberate design choice for round-trip fidelity — SCORM packages
+ * may contain non-standard field combinations from vendor tools. A discriminated
+ * union would reject these at decode time, breaking the lossless encoding guarantee.
+ * Type-correct field combinations are validated at the assessment runner level, not
+ * at the schema level.
+ */
 export const Interaction = Schema.Struct({
   // Common fields
   id: Schema.String,
@@ -78,7 +86,7 @@ export const Interaction = Schema.Struct({
   feedback: Schema.optional(Feedback),
 
   // true_false / fill_in / long_fill_in / likert / other
-  correctResponse: Schema.optional(Schema.Unknown),
+  correctResponse: Schema.optional(Schema.Union(Schema.Boolean, Schema.String, Schema.Number)),
 
   // single_choice / multi_choice
   choices: Schema.optional(Schema.Array(Choice)),
