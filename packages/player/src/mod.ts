@@ -2,8 +2,13 @@ export { CormPlayer } from "./components/corm-player.ts";
 export { CormNav } from "./components/corm-nav.ts";
 export { CormContent } from "./components/corm-content.ts";
 export { CormControls } from "./components/corm-controls.ts";
+export { CormScoFrame } from "./components/corm-sco-frame.ts";
 export { CormStatus } from "./components/corm-status.ts";
 export { renderMarkdown } from "./renderer.ts";
+
+// Content detection
+export { detectContentType, resolveContent } from "./content/mod.ts";
+export type { ContentInfo, ContentType } from "./content/mod.ts";
 export { createBridge } from "./bridge.ts";
 export type { Bridge, BridgeOptions } from "./bridge.ts";
 
@@ -37,6 +42,10 @@ export type {
   InteractionType,
 } from "./assessment/mod.ts";
 export { AssessmentSession, scoreInteraction } from "./assessment/mod.ts";
+
+// SCORM API shim
+export { installScormShim, Scorm12API, Scorm2004API } from "./shim/mod.ts";
+export type { InstalledShim, ShimOptions } from "./shim/mod.ts";
 
 // Audit trail
 export {

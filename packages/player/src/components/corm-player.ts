@@ -1,6 +1,8 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { renderMarkdown } from "../renderer.ts";
+import { resolveContent } from "../content/mod.ts";
+import type { ContentType } from "../content/mod.ts";
 import { CmiRuntime } from "../cmi/runtime.ts";
 import { type Bridge, createBridge } from "../bridge.ts";
 import { type CormStore, createCormStore } from "../store/store.ts";
@@ -72,6 +74,12 @@ export class CormPlayer extends LitElement {
 
   @state()
   private _canGoPrev = false;
+
+  @state()
+  private _contentType: ContentType = "markdown";
+
+  @state()
+  private _scoUrl = "";
 
   @state()
   private _rejectionMessage = "";
@@ -233,10 +241,17 @@ export class CormPlayer extends LitElement {
   private get _currentContent(): string {
     const activity = this._currentActivity;
     if (!activity?.content?.length) return "<p>No content available.</p>";
-    // Content is an array of file paths — join and render as markdown
-    // For now render the paths as a list; the actual content loading
-    // would need a content resolver
-    return renderMarkdown(activity.content.join("\n"));
+
+    const info = resolveContent(activity.content);
+    this._contentType = info.type;
+
+    if (info.type === "sco" && info.url) {
+      this._scoUrl = info.url;
+      return "";
+    }
+
+    this._scoUrl = "";
+    return renderMarkdown(info.markdown ?? activity.content.join("\n"));
   }
 
   private _onPrev(): void {
@@ -276,6 +291,10 @@ export class CormPlayer extends LitElement {
       ></corm-nav>
       <corm-content
         .content="${this._currentContent}"
+        .contentType="${this._contentType}"
+        .scoUrl="${this._scoUrl}"
+        .courseId="${this.courseId}"
+        .learnerId="${this.learnerId}"
         .rejectionMessage="${this._rejectionMessage}"
       ></corm-content>
       <corm-controls
