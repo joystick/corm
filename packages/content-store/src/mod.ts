@@ -1,2 +1,3 @@
-// @corm/content-store — public API
-export {};
+export { sha256 } from "./hash.ts";
+export { ContentStore, ContentStoreLive } from "./store.ts";
+export { computeChecksums, diffChecksums, type ChecksumDiff } from "./checksums.ts";
