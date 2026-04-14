@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest identifier="com.example.fire-safety-12" version="1.0"
+  xmlns="http://www.imsproject.org/xsd/imscp_rootv1p1p2"
+  xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_rootv1p2">
+  <metadata>
+    <schema>ADL SCORM</schema>
+    <schemaversion>1.2</schemaversion>
+  </metadata>
+  <organizations default="org-default">
+    <organization identifier="org-default">
+      <title>Fire Safety Training</title>
+      <item identifier="item-01" identifierref="res-01">
+        <title>Introduction</title>
+      </item>
+      <item identifier="item-02" identifierref="res-02">
+        <title>Fire Types</title>
+      </item>
+    </organization>
+  </organizations>
+  <resources>
+    <resource identifier="res-01" type="webcontent" adlcp:scormtype="sco" href="content/intro.html">
+      <file href="content/intro.html"/>
+    </resource>
+    <resource identifier="res-02" type="webcontent" adlcp:scormtype="sco" href="content/fire-types.html">
+      <file href="content/fire-types.html"/>
+    </resource>
+  </resources>
+</manifest>
