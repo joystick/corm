@@ -26,3 +26,29 @@ export {
   rollup,
   SequencingEngine,
 } from "./sequencing/mod.ts";
+
+// Assessment engine
+export type {
+  InteractionDefinition,
+  InteractionOption,
+  InteractionResponse,
+  InteractionResult,
+  InteractionResultValue,
+  InteractionType,
+} from "./assessment/mod.ts";
+export { AssessmentSession, scoreInteraction } from "./assessment/mod.ts";
+
+// Audit trail
+export {
+  AuditLogger,
+  getProctoringConfig,
+  HashChain,
+  ProctoringMonitor,
+} from "./audit/mod.ts";
+export type {
+  AuditLoggerOptions,
+  HashableInteraction,
+  ProctoringConfig,
+  ProctoringTier,
+  QuestionTiming,
+} from "./audit/mod.ts";
