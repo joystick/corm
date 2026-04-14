@@ -21,6 +21,7 @@
     "@effect/platform": "npm:@effect/platform@^0.78",
     "js-yaml": "npm:js-yaml@^4.1",
     "jszip": "npm:jszip@^3.10",
-    "sharp": "npm:sharp@^0.33"
+    "sharp": "npm:sharp@^0.33",
+    "@std/assert": "jsr:@std/assert@^1.0.0"
   }
 }
