@@ -1,2 +1,3 @@
 // @corm/lens — public API
-export {};
+export { scormToCorm } from "./get.ts";
+export { LensError } from "./errors.ts";
