@@ -1,0 +1,22 @@
+:root {
+  /* shadcn defaults -- overridden when embedded in seaducate.com */
+  --corm-primary: hsl(36 100% 58%);
+  --corm-primary-foreground: hsl(0 0% 100%);
+  --corm-secondary: hsl(187 79% 43%);
+  --corm-background: hsl(217 39% 14%);
+  --corm-foreground: hsl(0 0% 98%);
+  --corm-muted: hsl(217 33% 17%);
+  --corm-muted-foreground: hsl(215 20% 65%);
+  --corm-destructive: hsl(0 84% 60%);
+  --corm-border: hsl(217 33% 20%);
+  --corm-ring: hsl(36 100% 58%);
+  --corm-radius: 0.75rem;
+
+  /* Mapping from shadcn host tokens */
+  --corm-primary: var(--primary, hsl(36 100% 58%));
+  --corm-background: var(--background, hsl(217 39% 14%));
+  --corm-foreground: var(--foreground, hsl(0 0% 98%));
+  --corm-destructive: var(--destructive, hsl(0 84% 60%));
+  --corm-ring: var(--ring, hsl(36 100% 58%));
+  --corm-radius: var(--radius, 0.75rem);
+}

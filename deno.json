@@ -7,7 +7,8 @@
     "./packages/asset-processor",
     "./packages/lens",
     "./packages/validator",
-    "./packages/cli"
+    "./packages/cli",
+    "./packages/player"
   ],
   "tasks": {
     "test": "deno test --allow-read --allow-write --allow-net packages/",

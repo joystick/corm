@@ -1,0 +1,24 @@
+{
+  "name": "@corm/player",
+  "version": "0.1.0",
+  "exports": "./src/mod.ts",
+  "imports": {
+    "lit": "npm:lit@^3.2.0",
+    "marked": "npm:marked@^15.0.0",
+    "rxdb": "npm:rxdb@^16.0.0",
+    "rxdb/plugins/dev-mode": "npm:rxdb@^16.0.0/plugins/dev-mode",
+    "rxdb/plugins/storage-dexie": "npm:rxdb@^16.0.0/plugins/storage-dexie",
+    "rxdb/plugins/storage-memory": "npm:rxdb@^16.0.0/plugins/storage-memory",
+    "rxdb/plugins/validate-ajv": "npm:rxdb@^16.0.0/plugins/validate-ajv",
+    "@std/assert": "jsr:@std/assert@^1.0.0"
+  },
+  "lint": {
+    "rules": {
+      "exclude": ["no-slow-types"]
+    }
+  },
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "lib": ["deno.ns", "dom", "dom.iterable", "esnext"]
+  }
+}
