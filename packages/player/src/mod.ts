@@ -47,6 +47,44 @@ export { AssessmentSession, scoreInteraction } from "./assessment/mod.ts";
 export { installScormShim, Scorm12API, Scorm2004API } from "./shim/mod.ts";
 export type { InstalledShim, ShimOptions } from "./shim/mod.ts";
 
+// Sync transport (Phase 5.1)
+export type {
+  Chunk,
+  ChunkHeader,
+  MqttClient,
+  MqttClientOptions,
+  MqttMessage,
+  SyncQueueOptions,
+} from "./sync/mod.ts";
+export {
+  chunkMessage,
+  ChunkReassembler,
+  createMqttClient,
+  deserializeChunk,
+  MAX_PACKET_SIZE,
+  MAX_PAYLOAD_SIZE,
+  MockMqttClient,
+  serializeChunk,
+  SyncQueueManager,
+} from "./sync/mod.ts";
+
+// Sync watcher, content sync, coordinator (Phase 5.2)
+export {
+  ChangeStreamWatcher,
+  ContentSyncClient,
+  SyncCoordinator,
+} from "./sync/mod.ts";
+export type {
+  ChangeEvent,
+  ContentDiffEntry,
+  ContentManifest,
+  ContentManifestFile,
+  ContentSyncOptions,
+  SyncCoordinatorOptions,
+  SyncStatus,
+  WatcherOptions,
+} from "./sync/mod.ts";
+
 // Audit trail
 export {
   AuditLogger,
