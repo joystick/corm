@@ -1,2 +1,8 @@
 // @corm/cli — public API
-export {};
+export {
+  convertPipeline,
+  infoPipeline,
+  main,
+  parseScormZip,
+  validatePipeline,
+} from "./cli.ts";

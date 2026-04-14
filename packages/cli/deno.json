@@ -1,5 +1,17 @@
 {
   "name": "@corm/cli",
   "version": "0.1.0",
-  "exports": "./src/mod.ts"
+  "exports": "./src/mod.ts",
+  "imports": {
+    "@std/cli": "jsr:@std/cli@^1.0.0",
+    "@std/assert": "jsr:@std/assert@^1.0.0"
+  },
+  "tasks": {
+    "convert": "deno run --allow-read --allow-write src/main.ts"
+  },
+  "lint": {
+    "rules": {
+      "exclude": ["no-slow-types"]
+    }
+  }
 }
