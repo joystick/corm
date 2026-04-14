@@ -55,11 +55,19 @@ export class CormNav extends LitElement {
   }
 
   override render() {
+    const clampedProgress = Math.max(0, Math.min(100, this.progress));
     return html`
       <div class="nav-bar">
         <h1>${this.title}</h1>
-        <div class="progress-bar">
-          <div class="progress-fill" style="width: ${this.progress}%"></div>
+        <div
+          class="progress-bar"
+          role="progressbar"
+          aria-valuenow="${clampedProgress}"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-label="Course progress"
+        >
+          <div class="progress-fill" style="width: ${clampedProgress}%"></div>
         </div>
       </div>
     `;

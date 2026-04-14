@@ -4,22 +4,18 @@ import { renderMarkdown } from "../renderer.ts";
 import { CmiRuntime } from "../cmi/runtime.ts";
 import { type Bridge, createBridge } from "../bridge.ts";
 import { type CormStore, createCormStore } from "../store/store.ts";
+import {
+  type Activity,
+  allLeaves,
+  buildActivityTree,
+  type ManifestOrganization,
+  SequencingEngine,
+} from "../sequencing/mod.ts";
+import type { ChoiceMenuItem } from "./corm-controls.ts";
 import "./corm-nav.ts";
 import "./corm-content.ts";
 import "./corm-controls.ts";
 import "./corm-status.ts";
-
-interface ManifestItem {
-  identifier: string;
-  title: string;
-  content?: string;
-}
-
-interface ManifestOrganization {
-  identifier: string;
-  title: string;
-  items: ManifestItem[];
-}
 
 interface CormManifest {
   metadata?: { title?: string };
@@ -63,14 +59,31 @@ export class CormPlayer extends LitElement {
   private _manifest: CormManifest | null = null;
 
   @state()
-  private _currentIndex = 0;
+  private _currentActivity: Activity | null = null;
 
   @state()
-  private _items: ManifestItem[] = [];
+  private _availableActivities: ChoiceMenuItem[] = [];
+
+  @state()
+  private _completionPercentage = 0;
+
+  @state()
+  private _canGoNext = false;
+
+  @state()
+  private _canGoPrev = false;
+
+  @state()
+  private _rejectionMessage = "";
+
+  @state()
+  private _choiceEnabled = false;
 
   private _store: CormStore | null = null;
   private _runtime: CmiRuntime | null = null;
   private _bridge: Bridge | null = null;
+  private _engine: SequencingEngine | null = null;
+  private _activityTree: Activity[] = [];
 
   constructor() {
     super();
@@ -112,15 +125,9 @@ export class CormPlayer extends LitElement {
       });
       await this._bridge.initialize();
 
-      // Resume lesson_location if previously saved
-      const savedLocation = this._runtime.getValue(
-        "cmi.core.lesson_location",
-      );
-      if (savedLocation) {
-        const idx = Number(savedLocation);
-        if (!Number.isNaN(idx) && idx >= 0) {
-          this._currentIndex = idx;
-        }
+      // If manifest already loaded, wire up the engine
+      if (this._manifest) {
+        this._initializeEngine();
       }
     } catch (err) {
       console.error("[corm-player] Failed to initialize bridge:", err);
@@ -133,12 +140,88 @@ export class CormPlayer extends LitElement {
       const manifest: CormManifest = await res.json();
       this._manifest = manifest;
 
-      const org = manifest.organizations?.[0];
-      this._items = org?.items ?? [];
-      this._currentIndex = 0;
+      // Build activity tree and engine
+      this._initializeEngine();
     } catch (err) {
       console.error("[corm-player] Failed to load manifest:", err);
     }
+  }
+
+  private _initializeEngine(): void {
+    if (!this._manifest) return;
+
+    const runtime = this._runtime ?? new CmiRuntime();
+    if (!this._runtime) {
+      runtime.initialize("anonymous", "Anonymous");
+      this._runtime = runtime;
+    }
+
+    this._activityTree = buildActivityTree(this._manifest.organizations);
+    this._engine = new SequencingEngine(this._activityTree, runtime);
+
+    // Resume from lesson_location if available
+    const savedLocation = runtime.getValue("cmi.core.lesson_location");
+    if (savedLocation) {
+      // Try choice navigation to the saved activity
+      const result = this._engine.navigate("choice", savedLocation);
+      if (result.delivered) {
+        this._applyNavigationResult(result);
+        return;
+      }
+    }
+
+    // Default: start from the beginning
+    const result = this._engine.navigate("start");
+    this._applyNavigationResult(result);
+  }
+
+  /** Apply a navigation result to reactive state. */
+  private _applyNavigationResult(result: {
+    delivered: Activity | null;
+    reason?: string;
+    availableActivities: Activity[];
+  }): void {
+    if (!this._engine) return;
+
+    if (result.delivered) {
+      this._currentActivity = result.delivered;
+      this._rejectionMessage = "";
+
+      // Track location in CMI
+      this._trackLocation(result.delivered.id);
+    } else if (result.reason) {
+      this._rejectionMessage = result.reason;
+    }
+
+    // Update derived state
+    this._updateDerivedState(result.availableActivities);
+  }
+
+  /** Recompute canGoNext, canGoPrev, availableActivities, completion. */
+  private _updateDerivedState(available: Activity[]): void {
+    if (!this._engine) return;
+
+    this._completionPercentage = this._engine.getCompletionPercentage();
+
+    // Check if next/prev are possible by examining leaves
+    const leaves = allLeaves(this._activityTree);
+    const currentIdx = this._currentActivity
+      ? leaves.indexOf(this._currentActivity)
+      : -1;
+
+    this._canGoNext = currentIdx >= 0 && currentIdx < leaves.length - 1;
+    this._canGoPrev = currentIdx > 0;
+
+    // Build choice menu items from all leaves
+    const allLeafActivities = allLeaves(this._activityTree);
+    this._availableActivities = allLeafActivities.map((a) => ({
+      id: a.id,
+      title: a.title,
+      available: this._engine!.isActivityAvailable(a.id),
+    }));
+
+    // Determine if choice navigation is enabled (check any root's control mode)
+    this._choiceEnabled = this._availableActivities.length > 1;
   }
 
   private get _title(): string {
@@ -147,38 +230,37 @@ export class CormPlayer extends LitElement {
       "CORM Player";
   }
 
-  private get _progress(): number {
-    if (this._items.length === 0) return 0;
-    return Math.round(((this._currentIndex + 1) / this._items.length) * 100);
-  }
-
   private get _currentContent(): string {
-    const item = this._items[this._currentIndex];
-    if (!item?.content) return "<p>No content available.</p>";
-    return renderMarkdown(item.content);
+    const activity = this._currentActivity;
+    if (!activity?.content?.length) return "<p>No content available.</p>";
+    // Content is an array of file paths — join and render as markdown
+    // For now render the paths as a list; the actual content loading
+    // would need a content resolver
+    return renderMarkdown(activity.content.join("\n"));
   }
 
   private _onPrev(): void {
-    if (this._currentIndex > 0) {
-      this._currentIndex--;
-      this._trackLocation();
-    }
+    if (!this._engine) return;
+    const result = this._engine.navigate("previous");
+    this._applyNavigationResult(result);
   }
 
   private _onNext(): void {
-    if (this._currentIndex < this._items.length - 1) {
-      this._currentIndex++;
-      this._trackLocation();
-    }
+    if (!this._engine) return;
+    const result = this._engine.navigate("continue");
+    this._applyNavigationResult(result);
   }
 
-  private _trackLocation(): void {
+  private _onChoice(e: CustomEvent<{ targetId: string }>): void {
+    if (!this._engine) return;
+    const result = this._engine.navigate("choice", e.detail.targetId);
+    this._applyNavigationResult(result);
+  }
+
+  private _trackLocation(activityId: string): void {
     if (this._runtime) {
       try {
-        this._runtime.setValue(
-          "cmi.core.lesson_location",
-          String(this._currentIndex),
-        );
+        this._runtime.setValue("cmi.core.lesson_location", activityId);
         this._runtime.commit();
       } catch {
         // Runtime may be finished — ignore
@@ -190,14 +272,20 @@ export class CormPlayer extends LitElement {
     return html`
       <corm-nav
         .title="${this._title}"
-        .progress="${this._progress}"
+        .progress="${this._completionPercentage}"
       ></corm-nav>
-      <corm-content .content="${this._currentContent}"></corm-content>
+      <corm-content
+        .content="${this._currentContent}"
+        .rejectionMessage="${this._rejectionMessage}"
+      ></corm-content>
       <corm-controls
-        ?disable-prev="${this._currentIndex === 0}"
-        ?disable-next="${this._currentIndex >= this._items.length - 1}"
+        ?disable-prev="${!this._canGoPrev}"
+        ?disable-next="${!this._canGoNext}"
+        ?show-choice-menu="${this._choiceEnabled}"
+        .availableActivities="${this._availableActivities}"
         @corm-prev="${this._onPrev}"
         @corm-next="${this._onNext}"
+        @corm-choice="${this._onChoice}"
       ></corm-controls>
       <corm-status></corm-status>
     `;
