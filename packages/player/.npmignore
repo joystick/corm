@@ -1,0 +1,7 @@
+tests/
+stories/
+.storybook/
+*.test.ts
+tsconfig.build.json
+vite.config.ts
+deno.json
