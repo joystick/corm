@@ -63,38 +63,25 @@ interface ExtractResult {
 }
 ```
 
-**Dependencies to add:**
-```json
-{
-  "@corm/scorm-parser": "file:../corm/packages/scorm-parser",
-  "@corm/lens": "file:../corm/packages/lens"
-}
+**Dependency to add:**
+```bash
+npm install @corm/transpiler
+# or during development:
+npm install ../corm/packages/transpiler
 ```
 
-Or publish to npm and use versioned packages. During development, use file references or `npm link`.
+The `@corm/transpiler` package is a Node.js-compatible npm package that bundles the SCORM parser (using `@xmldom/xmldom` instead of Deno's `deno-dom`) and the CORM lens. It handles BOM stripping, nested manifest paths, and all SCORM versions (1.2, 2004 2nd–4th).
 
-Note: `@corm/scorm-parser` and `@corm/lens` are Deno packages. For use in seaducate.com's Node.js backend, either:
-- (a) Build them as npm packages (same Vite library mode pattern as player), or
-- (b) Use the `@corm/cli` as a subprocess: `deno run --allow-read packages/cli/src/main.ts convert <zip> --json`, or
-- (c) Port the transpilation logic into a small Node-compatible module
-
-**Recommended: option (b)** — call the CORM CLI as a subprocess during extraction. Zero dependency conflicts, uses the already-tested Deno pipeline. The CLI's `convert` command outputs CORM manifest JSON to stdout with `--json`.
-
+**Usage in extraction service:**
 ```typescript
-import { execFile } from "child_process";
+import { transpileScorm } from "@corm/transpiler";
 
-async function transpileToCorm(manifestXmlPath: string): Promise<object> {
-  return new Promise((resolve, reject) => {
-    execFile("deno", [
-      "run", "--allow-read",
-      "/path/to/corm/packages/cli/src/main.ts",
-      "convert", manifestXmlPath, "--json"
-    ], (error, stdout) => {
-      if (error) reject(error);
-      else resolve(JSON.parse(stdout));
-    });
-  });
-}
+// After extracting files from the zip:
+const zipBuffer = await readUploadFile("course-content", contentUrl);
+const cormManifest = await transpileScorm(new Uint8Array(zipBuffer));
+const manifestJson = JSON.stringify(cormManifest, null, 2);
+await writeUploadFile("course-player", `${courseId}/corm-manifest.json`, Buffer.from(manifestJson));
+const cormManifestUrl = getPublicUrl("course-player", `${courseId}/corm-manifest.json`);
 ```
 
 ### 3. Server: Update Course Routes
@@ -289,16 +276,17 @@ The existing `@corm/content-store` checksum diffing ensures only changed files a
 ## Dependencies
 
 ```
-seaducate.com (Node/Vite)
-  └── @corm/player (npm package, Lit web components)
+seaducate.com client (Vite/React)
+  └── @corm/player (npm, Lit web components)
         ├── lit ^3.2.0
         ├── marked ^15.0.0
         └── rxdb ^16.0.0 (peer, optional)
 
-seaducate.com server (Node/Hono)
-  └── calls: deno run @corm/cli convert --json (subprocess)
-        ├── @corm/scorm-parser
-        └── @corm/lens
+seaducate.com server (Hono/Node.js)
+  └── @corm/transpiler (npm, Node.js-compatible)
+        ├── effect ^3.14.0
+        ├── jszip ^3.10.0
+        └── @xmldom/xmldom ^0.9.0
 ```
 
 ## Testing Checklist
