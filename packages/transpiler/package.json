@@ -1,0 +1,29 @@
+{
+  "name": "@corm/transpiler",
+  "version": "0.1.0",
+  "description": "SCORM to CORM transpiler for Node.js — parse SCORM packages and convert to CORM manifest format",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "vite build && tsc -p tsconfig.build.json"
+  },
+  "dependencies": {
+    "effect": "^3.14.0",
+    "jszip": "^3.10.0",
+    "@xmldom/xmldom": "^0.9.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "vite": "^5.4.8"
+  },
+  "license": "MIT"
+}
